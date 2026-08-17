@@ -1,0 +1,26 @@
+# Unreal build artifacts
+Binaries/
+Intermediate/
+Build/
+DerivedDataCache/
+Saved/
+
+# plugin_tool.py output
+.build_output/
+.packages/
+.test_projects/
+.test_logs/
+.test_reports/
+__pycache__/
+*.pyc
+
+# IDE / OS noise
+.idea/
+.vs/
+*.sln
+*.suo
+*.user
+*.VC.db
+*.opendb
+.DS_Store
+Thumbs.db

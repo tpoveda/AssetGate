@@ -23,7 +23,7 @@
   "Modules": [
     {
       "Name": "AssetGateCore",
-      "Type": "Runtime",
+      "Type": "Editor",
       "LoadingPhase": "Default"
     },
     {

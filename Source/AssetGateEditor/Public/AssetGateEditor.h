@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
+class FFrontendFilter;
 struct FAssetData;
 class FAssetGateCommands;
 class FUICommandInfo;
@@ -16,6 +17,7 @@ class SDockTab;
 namespace AssetGateEditor
 {
 	static const FName AssetQualityConsoleTabId = TEXT("AssetGate2AssetQualityConsole");
+	static const FName HasIssuesFilterName = TEXT("AssetGate2HasIssues");
 }
 
 /** 
@@ -48,6 +50,22 @@ public:
 
 	/* Emits a placeholder recursive validation request for the current folder selection. */
 	void ValidateSelectedPaths();
+
+	/**
+	 * Returns true when the selected asset has one or more recorded AssetGate2 diagnostics.
+	 *
+	 * @param AssetPath The asset path being queried by the Content Browser surfaces.
+	 * @return True when the asset has recorded issues.
+	 */
+	static bool AssetHasRecordedIssues(const FSoftObjectPath& AssetPath);
+
+	/**
+	 * Returns true when the supplied Content Browser item path matches a recorded AssetGate2 diagnostic.
+	 *
+	 * @param ItemPath The invariant Content Browser path for the asset item.
+	 * @return True when the item has recorded issues.
+	 */
+	static bool AssetHasRecordedIssues(const FName ItemPath);
 
 private:
 	/** Register the tab spawner for the Asset Gate Editor. */

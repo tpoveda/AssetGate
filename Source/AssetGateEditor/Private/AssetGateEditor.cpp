@@ -13,6 +13,8 @@
 #include "Logging/MessageLog.h"
 #include "Widgets/Docking/SDockTab.h"
 #include "Framework/Application/SlateApplication.h"
+#include "Validation/AssetGateDiagnosticTransport.h"
+#include "Validation/AssetGateValidationTypes.h"
 
 #define LOCTEXT_NAMESPACE "FAssetGateEditorModule"
 
@@ -39,12 +41,16 @@ void FAssetGateEditorModule::StartupModule()
 			this, &FAssetGateEditorModule::RegisterMenus));
 
 	AssetGate::RegisterContentBrowserExtensions();
+	AssetGate::RegisterContentBrowserFilter();
+	AssetGate::RegisterAssetIssueIndicators();
 
 	UE_LOG(LogAssetGateEditor, Log, TEXT("AssetGateEditor module started."));
 }
 
 void FAssetGateEditorModule::ShutdownModule()
 {
+	AssetGate::UnregisterAssetIssueIndicators();
+	AssetGate::UnregisterContentBrowserFilter();
 	AssetGate::UnregisterContentBrowserExtensions();
 
 	UnregisterMenus();
@@ -75,6 +81,48 @@ void FAssetGateEditorModule::ValidateSelectedPaths()
 		LOCTEXT("ValidateSelectedPathsPlaceholder",
 		        "AssetGate folder validation is wired for {0} selected folder(s)."),
 		FText::AsNumber(SelectedPathContext.Num()))));
+}
+
+bool FAssetGateEditorModule::AssetHasRecordedIssues(const FSoftObjectPath& AssetPath)
+{
+	if (AssetPath.IsNull())
+	{
+		return false;
+	}
+
+	for (const FAssetGateDiagnostic& Diagnostic : FAssetGateDiagnosticTransport::Get().GetRecentDiagnostics())
+	{
+		if (Diagnostic.AssetPath == AssetPath)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+bool FAssetGateEditorModule::AssetHasRecordedIssues(const FName ItemPath)
+{
+	if (ItemPath.IsNone())
+	{
+		return false;
+	}
+
+	const FString ItemPathString = ItemPath.ToString();
+	for (const FAssetGateDiagnostic& Diagnostic : FAssetGateDiagnosticTransport::Get().GetRecentDiagnostics())
+	{
+		if (Diagnostic.AssetPath.IsNull())
+		{
+			continue;
+		}
+
+		if (Diagnostic.AssetPath.GetAssetPathString() == ItemPathString)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void FAssetGateEditorModule::RegisterTabSpawner()

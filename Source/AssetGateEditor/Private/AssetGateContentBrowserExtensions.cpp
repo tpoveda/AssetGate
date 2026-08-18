@@ -3,8 +3,10 @@
 
 #include "AssetGateContentBrowserExtensions.h"
 
+#include "AssetGateContentBrowserFilterExtension.h"
 #include "AssetGateEditor.h"
 #include "ContentBrowserModule.h"
+#include "FrontendFilterBase.h"
 #include "Framework/MultiBox/MultiBoxBuilder.h"
 
 #define LOCTEXT_NAMESPACE "AssetGateContentBrowserExtensions"
@@ -13,6 +15,8 @@ namespace AssetGate::ContentBrowserPrivate
 {
 	static FDelegateHandle AssetContextMenuHandle;
 	static FDelegateHandle PathContextMenuHandle;
+	static FDelegateHandle AssetIssueIndicatorHandle;
+	static TObjectPtr<UAssetGateContentBrowserFilterExtension> FilterExtensionInstance{ nullptr };
 
 	/**
 	 * Extends the asset context menu in the Content Browser by adding custom options based on the selected assets.
@@ -84,8 +88,6 @@ namespace AssetGate::ContentBrowserPrivate
 				MenuBuilder.EndSection();
 			}));
 		return Extender;
-
-		return Extender;
 	}
 }
 
@@ -129,4 +131,80 @@ void AssetGate::UnregisterContentBrowserExtensions()
 
 	AssetContextMenuHandle.Reset();
 	PathContextMenuHandle.Reset();
+}
+
+void AssetGate::RegisterContentBrowserFilter()
+{
+	using namespace AssetGate::ContentBrowserPrivate;
+
+	FilterExtensionInstance = GetMutableDefault<
+		UAssetGateContentBrowserFilterExtension>();
+	if (FilterExtensionInstance != nullptr)
+	{
+		FilterExtensionInstance->AddToRoot();
+	}
+}
+
+void AssetGate::UnregisterContentBrowserFilter()
+{
+	using namespace AssetGate::ContentBrowserPrivate;
+
+	if (FilterExtensionInstance != nullptr)
+	{
+		FilterExtensionInstance->RemoveFromRoot();
+		FilterExtensionInstance = nullptr;
+	}
+}
+
+void AssetGate::RegisterAssetIssueIndicators()
+{
+	using namespace AssetGate::ContentBrowserPrivate;
+
+	FContentBrowserModule* CBModule = FModuleManager::GetModulePtr<FContentBrowserModule>(TEXT("ContentBrowser"));
+	if (!CBModule)
+	{
+		return;
+	}
+
+	AssetIssueIndicatorHandle = CBModule->AddAssetViewExtraStateGenerator(
+		FAssetViewExtraStateGenerator(
+			FOnGenerateAssetViewExtraStateIndicators::CreateLambda(
+				[](const FAssetData& AssetData) -> TSharedRef<SWidget>
+				{
+					if (!FAssetGateEditorModule::AssetHasRecordedIssues(AssetData.GetSoftObjectPath()))
+					{
+						return SNullWidget::NullWidget;
+					}
+
+					return SNew(STextBlock)
+						.Text(FText::FromString(TEXT("!")))
+						.ColorAndOpacity(FLinearColor(0.85f, 0.25f, 0.2f));
+				}),
+			FOnGenerateAssetViewExtraStateIndicators::CreateLambda(
+				[](const FAssetData& AssetData) -> TSharedRef<SWidget>
+				{
+					if (!FAssetGateEditorModule::AssetHasRecordedIssues(AssetData.GetSoftObjectPath()))
+					{
+						return SNullWidget::NullWidget;
+					}
+
+					return SNew(STextBlock)
+						.Text(LOCTEXT(
+							"IssueIndicatorTooltip",
+							"AssetGate has recorded issues for this asset."));
+				})));
+}
+
+void AssetGate::UnregisterAssetIssueIndicators()
+{
+	using namespace AssetGate::ContentBrowserPrivate;
+
+	if (FModuleManager::Get().IsModuleLoaded(TEXT("ContentBrowser")) && AssetIssueIndicatorHandle.IsValid())
+	{
+		FContentBrowserModule& ContentBrowserModule = FModuleManager::GetModuleChecked<FContentBrowserModule>(
+			TEXT("ContentBrowser"));
+		ContentBrowserModule.RemoveAssetViewExtraStateGenerator(AssetIssueIndicatorHandle);
+	}
+
+	AssetIssueIndicatorHandle.Reset();
 }

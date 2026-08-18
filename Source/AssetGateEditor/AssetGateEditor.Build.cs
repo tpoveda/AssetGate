@@ -17,6 +17,7 @@ public class AssetGateEditor : ModuleRules
 			"UnrealEd",
 			"LevelEditor",
 			"ContentBrowser",
+			"ContentBrowserData",
 			"AssetRegistry",
 			"AssetTools",
 			"ToolMenus",

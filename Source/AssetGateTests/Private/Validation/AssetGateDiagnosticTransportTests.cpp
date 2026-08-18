@@ -2,7 +2,7 @@
 
 #include "Misc/AutomationTest.h"
 
-#include "Validation/AssetGateDiagnosticTransport.h""
+#include "Validation/AssetGateDiagnosticTransport.h"
 
 #if WITH_EDITOR
 

@@ -62,6 +62,29 @@ struct ASSETGATECORE_API FAssetGateValidationScope
  * pre-submit hook, a CI job, ...) and is expected to be threaded through the batch
  * executor and policy gates.
  */
+
+struct ASSETGATECORE_API FAssetGateValidationRunMetadata
+{
+	/** Human-readable label for the selected scope. */
+	FString ScopeLabel{ TEXT("Full Project") };
+
+	/** Human-readable label for the triggering run mode. */
+	FString RunModeLabel{ TEXT("Manual") };
+
+	/** The number of assets the run was created to evaluate. */
+	int32 AssetCount{ 0 };
+
+	/** Elapsed wall-clock time for the run in seconds. */
+	double ElapsedSeconds{ 0 };
+
+	/** Refreshes UI metadata using the current context values. */
+	void Refresh(
+		const EAssetGateValidationRunMode InRunMode,
+		const FAssetGateValidationScope& InScope,
+		int32 InAssetCount = 0,
+		double InElapsedSeconds = 0.0f);
+};
+
 struct ASSETGATECORE_API FAssetGateValidationRunContext
 {
 	/** What triggered this validation run. */
@@ -70,11 +93,20 @@ struct ASSETGATECORE_API FAssetGateValidationRunContext
 	/** Which assets this run is expected to cover. */
 	FAssetGateValidationScope Scope;
 
+	/** UI-friendly metadata emitted for editor, browser, and reporting surfaces. */
+	FAssetGateValidationRunMetadata Metadata;
+
 	/** Cooperative cancellation signal validators/batch executors should poll between assets. */
 	FAssetGateCancellationToken CancellationToken;
 
 	/** @return true when the caller has requested this run stop early. */
 	bool IsCancellationRequested() const;
+
+	/** Refresh the UI metadata derived from the current run state. */
+	void RefreshMetadata();
+
+	/** Sets runtime information that the editor UI can surface while the run is active. */
+	void SetRuntimeMetadata(int32 InAssetCount, double InElapsedSeconds = 0.0f);
 
 	/** Convenience constructor for a manual, full-project run with no cancellation source. */
 	static FAssetGateValidationRunContext MakeManualFullProjectRun();

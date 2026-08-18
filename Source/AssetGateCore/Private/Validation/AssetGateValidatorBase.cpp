@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2026 Tomi Poveda. All Rights Reserved.
 
-
 #include "Validation/AssetGateValidatorBase.h"
 
 #include "Logging/TokenizedMessage.h"

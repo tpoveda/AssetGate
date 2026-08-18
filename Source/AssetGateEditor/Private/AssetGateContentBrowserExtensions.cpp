@@ -16,7 +16,6 @@ namespace AssetGate::ContentBrowserPrivate
 	static FDelegateHandle AssetContextMenuHandle;
 	static FDelegateHandle PathContextMenuHandle;
 	static FDelegateHandle AssetIssueIndicatorHandle;
-	static TObjectPtr<UAssetGateContentBrowserFilterExtension> FilterExtensionInstance{ nullptr };
 
 	/**
 	 * Extends the asset context menu in the Content Browser by adding custom options based on the selected assets.
@@ -103,7 +102,7 @@ void AssetGate::RegisterContentBrowserExtensions()
 	CBModule.GetAllAssetViewContextMenuExtenders().Add(MoveTemp(AssetExtender));
 
 	auto PathExtender = FContentBrowserMenuExtender_SelectedPaths::CreateStatic(&ExtendPathContextMenu);
-	PathContextMenuHandle = AssetExtender.GetHandle();
+	PathContextMenuHandle = PathExtender.GetHandle();
 	CBModule.GetAllPathViewContextMenuExtenders().Add(MoveTemp(PathExtender));
 }
 
@@ -135,25 +134,9 @@ void AssetGate::UnregisterContentBrowserExtensions()
 
 void AssetGate::RegisterContentBrowserFilter()
 {
-	using namespace AssetGate::ContentBrowserPrivate;
-
-	FilterExtensionInstance = GetMutableDefault<
-		UAssetGateContentBrowserFilterExtension>();
-	if (FilterExtensionInstance != nullptr)
-	{
-		FilterExtensionInstance->AddToRoot();
-	}
-}
-
-void AssetGate::UnregisterContentBrowserFilter()
-{
-	using namespace AssetGate::ContentBrowserPrivate;
-
-	if (FilterExtensionInstance != nullptr)
-	{
-		FilterExtensionInstance->RemoveFromRoot();
-		FilterExtensionInstance = nullptr;
-	}
+	// Force the filter extension class default object to be constructed.
+	// Do not AddToRoot() the CDO; Unreal owns its lifetime.
+	GetMutableDefault<UAssetGateContentBrowserFilterExtension>();
 }
 
 void AssetGate::RegisterAssetIssueIndicators()

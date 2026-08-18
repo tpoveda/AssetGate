@@ -50,7 +50,6 @@ void FAssetGateEditorModule::StartupModule()
 void FAssetGateEditorModule::ShutdownModule()
 {
 	AssetGate::UnregisterAssetIssueIndicators();
-	AssetGate::UnregisterContentBrowserFilter();
 	AssetGate::UnregisterContentBrowserExtensions();
 
 	UnregisterMenus();

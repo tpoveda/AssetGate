@@ -42,7 +42,7 @@ namespace
 	}
 
 	/**
-	 * Returns the editor-facing title for the first built-in naming validator.
+	 * Return the editor-facing title for the first built-in naming validator.
 	 *
 	 * @param RuleId The rule identifier associated with the diagnostic.
 	 * @return A human-readable rule title for the explanation panel.

@@ -12,13 +12,10 @@ namespace AssetGate
 	/** Unregister previously registered custom extensions for the Content Browser within the AssetGate namespace. */
 	void UnregisterContentBrowserExtensions();
 
-	/* Registers the AssetGate Content Browser filter extension. */
+	/* Register the AssetGate Content Browser filter extension. */
 	void RegisterContentBrowserFilter();
-
-	/** Unregister the AssetGate Content Browser filter extension. */
-	void UnregisterContentBrowserFilter();
-
-	/** Registers invalid-asset issue indicators in the Content Browser asset view. */
+	
+	/** Register invalid-asset issue indicators in the Content Browser asset view. */
 	void RegisterAssetIssueIndicators();
 
 	/** Unregister invalid-asset issue indicators from the Content Browser asset view. */

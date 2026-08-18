@@ -3,56 +3,96 @@
 #include "AssetGateEditor.h"
 
 #include "AssetGateCommands.h"
+#include "AssetGateContentBrowserExtensions.h"
 #include "SAssetGateQualityConsole.h"
 
 #include "ToolMenus.h"
 #include "LevelEditor.h"
+#include "WorkspaceMenuStructure.h"
+#include "WorkspaceMenuStructureModule.h"
+#include "Logging/MessageLog.h"
 #include "Widgets/Docking/SDockTab.h"
-#include "Framework/Commands/UICommandList.h"
+#include "Framework/Application/SlateApplication.h"
 
 #define LOCTEXT_NAMESPACE "FAssetGateEditorModule"
 
 DEFINE_LOG_CATEGORY_STATIC(LogAssetGateEditor, Log, All)
 
+FAssetGateEditorModule& FAssetGateEditorModule::Get()
+{
+	return FModuleManager::LoadModuleChecked<FAssetGateEditorModule>("AssetGateEditor");
+}
+
+bool FAssetGateEditorModule::IsAvailable()
+{
+	return FModuleManager::Get().IsModuleLoaded("AssetGateEditor");
+}
+
 void FAssetGateEditorModule::StartupModule()
 {
-	BindCommands();
+	FAssetGateCommands::Register();
 
-	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(
-		                        AssetGateEditor::AssetQualityConsoleTabId,
-		                        FOnSpawnTab::CreateRaw(this, &FAssetGateEditorModule::SpawnAssetQualityConsoleTab))
-	                        .SetDisplayName(LOCTEXT("AssetGateAssetQualityConsole", "Asset Quality Console"))
-	                        .SetMenuType(ETabSpawnerMenuType::Hidden);
+	RegisterTabSpawner();
 
 	UToolMenus::RegisterStartupCallback(
 		FSimpleMulticastDelegate::FDelegate::CreateRaw(
 			this, &FAssetGateEditorModule::RegisterMenus));
+
+	AssetGate::RegisterContentBrowserExtensions();
 
 	UE_LOG(LogAssetGateEditor, Log, TEXT("AssetGateEditor module started."));
 }
 
 void FAssetGateEditorModule::ShutdownModule()
 {
-	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(AssetGateEditor::AssetQualityConsoleTabId);
+	AssetGate::UnregisterContentBrowserExtensions();
 
-	AssetGateCommands->Unregister();
-	AssetGateCommands.Reset();
-	AssetGateCommandList.Reset();
+	UnregisterMenus();
+
+	UnregisterTabSpawner();
+
+	FAssetGateCommands::Unregister();
+
+	SelectedAssetContext.Reset();
+	SelectedPathContext.Reset();
 
 	UE_LOG(LogAssetGateEditor, Log, TEXT("AssetGateEditor module stopped."));
 }
 
-void FAssetGateEditorModule::BindCommands()
+void FAssetGateEditorModule::ValidateSelectedAssets()
 {
-	AssetGateCommands = MakeShared<FAssetGateCommands>();
-	AssetGateCommands->RegisterCommands();
+	FMessageLog AssetGateLog("AssetGate");
+	AssetGateLog.Info()->AddToken(FTextToken::Create(FText::Format(
+		LOCTEXT("ValidateSelectedAssetsPlaceholder",
+		        "AssetGate browser validation is wired for {0} selected asset(s)."),
+		FText::AsNumber(SelectedAssetContext.Num()))));
+}
 
-	AssetGateCommandList = MakeShared<FUICommandList>();
-	AssetGateCommandList->MapAction(
-		AssetGateCommands->OpenAssetQualityConsole,
-		FUIAction(
-			FExecuteAction::CreateStatic(&FAssetGateEditorModule::OpenAssetQualityConsole),
-			FCanExecuteAction()));
+void FAssetGateEditorModule::ValidateSelectedPaths()
+{
+	FMessageLog AssetGateLog("AssetGate");
+	AssetGateLog.Info()->AddToken(FTextToken::Create(FText::Format(
+		LOCTEXT("ValidateSelectedPathsPlaceholder",
+		        "AssetGate folder validation is wired for {0} selected folder(s)."),
+		FText::AsNumber(SelectedPathContext.Num()))));
+}
+
+void FAssetGateEditorModule::RegisterTabSpawner()
+{
+	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(
+		                        AssetGateEditor::AssetQualityConsoleTabId,
+		                        FOnSpawnTab::CreateRaw(this, &FAssetGateEditorModule::SpawnAssetQualityConsoleTab))
+	                        .SetDisplayName(LOCTEXT("AssetGateAssetQualityConsole", "Asset Quality Console"))
+	                        .SetGroup(WorkspaceMenu::GetMenuStructure().GetToolsCategory());
+
+}
+
+void FAssetGateEditorModule::UnregisterTabSpawner()
+{
+	if (FSlateApplication::IsInitialized())
+	{
+		FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(AssetGateEditor::AssetQualityConsoleTabId);
+	}
 }
 
 void FAssetGateEditorModule::RegisterMenus()
@@ -76,7 +116,11 @@ void FAssetGateEditorModule::RegisterMenus()
 void FAssetGateEditorModule::UnregisterMenus()
 {
 	UToolMenus::UnRegisterStartupCallback(this);
-	UToolMenus::UnregisterOwner(this);
+
+	if (UObjectInitialized() && !IsEngineExitRequested())
+	{
+		UToolMenus::UnregisterOwner(this);
+	}
 }
 
 TSharedRef<SDockTab> FAssetGateEditorModule::SpawnAssetQualityConsoleTab(const FSpawnTabArgs& Args)

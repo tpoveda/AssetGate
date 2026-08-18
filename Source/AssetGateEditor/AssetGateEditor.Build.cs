@@ -25,5 +25,10 @@ public class AssetGateEditor : ModuleRules
 			"AssetGateRules",
 			"AssetGateSourceControl"
 		});
+
+		PrivateDependencyModuleNames.AddRange(new[]
+		{
+			"WorkspaceMenuStructure"
+		});
 	}
 }

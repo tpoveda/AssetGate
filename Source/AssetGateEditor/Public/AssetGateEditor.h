@@ -24,14 +24,37 @@ namespace AssetGateEditor
 class FAssetGateEditorModule : public IModuleInterface
 {
 public:
+	/**
+	 * Retrieve the singleton instance of the Asset Gate editor module.
+	 * 
+	 * @return A reference to the singleton instance of FAssetGateEditorModule.
+	 */
+	static FAssetGateEditorModule& Get();
+
+	/**
+	 * Determine if the Asset Gate Editor module is currently available.
+	 *
+	 * @return True if the Asset Gate Editor module is available; false otherwise.
+	 */
+	static bool IsAvailable();
+
 	//~ Begin IModuleInterface
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 	//~ End IModuleInterface
 
+	/*Emits a placeholder validation request for the current asset selection. */
+	void ValidateSelectedAssets();
+
+	/* Emits a placeholder recursive validation request for the current folder selection. */
+	void ValidateSelectedPaths();
+
 private:
-	/** Binds commands to the AssetGate editor module. */
-	void BindCommands();
+	/** Register the tab spawner for the Asset Gate Editor. */
+	void RegisterTabSpawner();
+
+	/** Unregister the tab spawner for the Asset Gate Editor. */
+	void UnregisterTabSpawner();
 
 	/** Registers the Level Editor Window menu entry. */
 	void RegisterMenus();
@@ -50,12 +73,12 @@ private:
 	/** Open the Asset Quality Console for inspection and debugging purposes. */
 	static void OpenAssetQualityConsole();
 
-	/** Shared command set for editor actions. */
-	TSharedPtr<FAssetGateCommands> AssetGateCommands;
-
-	/** Command list used for defining and binding AssetGate-specific editor commands. */
-	TSharedPtr<FUICommandList> AssetGateCommandList;
-
 	/** Command binding for the Asset Quality Console open action. */
 	TSharedPtr<const FUICommandInfo> OpenAssetQualityConsoleCommand;
+
+	/** Cached asset selection used by the current menu extension callback. */
+	TArray<FAssetData> SelectedAssetContext;
+
+	/** Cached path selection used by the current menu extension callback. */
+	TArray<FString> SelectedPathContext;
 };

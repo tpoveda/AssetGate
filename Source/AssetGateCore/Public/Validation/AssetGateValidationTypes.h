@@ -8,7 +8,7 @@
 #include "AssetGateValidationTypes.generated.h"
 
 /**
- * AssetGate severity level used to classify diagnostics independently from gate policy.
+ * AssetGate severity level used to classify diagnostics independently of gate policy.
  */
 UENUM(BlueprintType)
 enum class EAssetGateDiagnosticSeverity : uint8
@@ -98,7 +98,7 @@ struct FAssetGateValidationResult
 	 *
 	 * @return True if there are no diagnostics in the validation result, false otherwise.
 	 */
-	void IsEmpty() const;
+	bool IsEmpty() const;
 
 	/**
 	 * Create a validation result marked as valid with no associated diagnostics.

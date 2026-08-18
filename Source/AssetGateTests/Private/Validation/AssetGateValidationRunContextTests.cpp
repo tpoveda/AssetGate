@@ -47,7 +47,28 @@ bool FAssetGateValidationRunContextTest::RunTest(const FString& Parameters)
 		TestEqual(TEXT("Manual convenience run should use Manual run mode"),
 		          ManualRun.RunMode, EAssetGateValidationRunMode::Manual);
 		TestFalse(TEXT("Manual convenience run should not be changed-assets-only"), ManualRun.Scope.bChangedAssetsOnly);
+		TestEqual(TEXT("Manual convenience run should expose a readable scope label for the editor UI"),
+		          ManualRun.Metadata.ScopeLabel, TEXT("Full project"));
+		TestEqual(TEXT("Manual convenience run should expose a readable run mode label for the editor UI"),
+		          ManualRun.Metadata.RunModeLabel, TEXT("Manual"));
+		TestEqual(TEXT("Manual convenience run should initialize the asset count metadata to zero"),
+		          ManualRun.Metadata.AssetCount, 0);
+		TestEqual(TEXT("Manual convenience run should initialize elapsed time metadata to zero"),
+		          ManualRun.Metadata.ElapsedSeconds, 0.0);
 		TestFalse(TEXT("Manual convenience run should not start cancelled"), ManualRun.IsCancellationRequested());
+	}
+
+	// Runtime metadata should be refreshable and remain readable by editor/browser surfaces.
+	{
+		FAssetGateValidationRunContext Context = FAssetGateValidationRunContext::MakeManualFullProjectRun();
+		Context.Scope = FAssetGateValidationScope::MakeChangedAssetsScope(
+			{ FSoftObjectPath(TEXT("/Game/Changed/Asset.Asset")) });
+		Context.SetRuntimeMetadata(12, 1.5);
+
+		TestEqual(TEXT("Runtime metadata should reflect changed-assets scope"), Context.Metadata.ScopeLabel,
+		          TEXT("Changed assets (1)"));
+		TestEqual(TEXT("Runtime metadata should reflect the asset count"), Context.Metadata.AssetCount, 12);
+		TestEqual(TEXT("Runtime metadata should reflect the elapsed time"), Context.Metadata.ElapsedSeconds, 1.5);
 	}
 
 	// A cancellation request made on the source should be observable through a context
@@ -58,6 +79,7 @@ bool FAssetGateValidationRunContextTest::RunTest(const FString& Parameters)
 		FAssetGateValidationRunContext Context;
 		Context.RunMode = EAssetGateValidationRunMode::CI;
 		Context.CancellationToken = CancellationSource.GetToken();
+		Context.RefreshMetadata();
 
 		TestFalse(
 			TEXT("Context should not report cancellation before it is requested"),

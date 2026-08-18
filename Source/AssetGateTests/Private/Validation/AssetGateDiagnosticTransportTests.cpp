@@ -7,20 +7,20 @@
 #if WITH_EDITOR
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(
-	FAssetGate2DiagnosticTransportTest,
+	FAssetGateDiagnosticTransportTest,
 	"AssetGate.Core.Validation.DiagnosticTransport",
 	EAutomationTestFlags::EditorContext | EAutomationTestFlags::ProductFilter)
 
-bool FAssetGate2DiagnosticTransportTest::RunTest(const FString& Parameters)
+bool FAssetGateDiagnosticTransportTest::RunTest(const FString& Parameters)
 {
 	FAssetGateDiagnosticTransport& Transport = FAssetGateDiagnosticTransport::Get();
 	Transport.Clear();
 
 	FAssetGateDiagnostic Diagnostic;
-	Diagnostic.RuleId = TEXT("AssetGate2.Test.DiagnosticTransport");
+	Diagnostic.RuleId = TEXT("AssetGate.Test.DiagnosticTransport");
 	Diagnostic.AssetPath = FSoftObjectPath(TEXT("/Game/Test/Asset.Asset"));
 	Diagnostic.PropertyPath = TEXT("DisplayName");
-	Diagnostic.Id = TEXT("AssetGate2.Test.DiagnosticTransport:/Game/Test/Asset.Asset:DisplayName");
+	Diagnostic.Id = TEXT("AssetGate.Test.DiagnosticTransport:/Game/Test/Asset.Asset:DisplayName");
 	Diagnostic.Message = FText::FromString(TEXT("Diagnostic transport should retain this result."));
 	Diagnostic.Severity = EAssetGateDiagnosticSeverity::Warning;
 

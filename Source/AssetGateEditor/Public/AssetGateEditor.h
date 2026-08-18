@@ -16,8 +16,8 @@ class SDockTab;
 
 namespace AssetGateEditor
 {
-	static const FName AssetQualityConsoleTabId = TEXT("AssetGate2AssetQualityConsole");
-	static const FName HasIssuesFilterName = TEXT("AssetGate2HasIssues");
+	static const FName AssetQualityConsoleTabId = TEXT("AssetGateAssetQualityConsole");
+	static const FName HasIssuesFilterName = TEXT("AssetGateHasIssues");
 }
 
 /** 
@@ -52,7 +52,7 @@ public:
 	void ValidateSelectedPaths();
 
 	/**
-	 * Returns true when the selected asset has one or more recorded AssetGate2 diagnostics.
+	 * Returns true when the selected asset has one or more recorded AssetGate diagnostics.
 	 *
 	 * @param AssetPath The asset path being queried by the Content Browser surfaces.
 	 * @return True when the asset has recorded issues.
@@ -60,7 +60,7 @@ public:
 	static bool AssetHasRecordedIssues(const FSoftObjectPath& AssetPath);
 
 	/**
-	 * Returns true when the supplied Content Browser item path matches a recorded AssetGate2 diagnostic.
+	 * Returns true when the supplied Content Browser item path matches a recorded AssetGate diagnostic.
 	 *
 	 * @param ItemPath The invariant Content Browser path for the asset item.
 	 * @return True when the item has recorded issues.
@@ -90,6 +90,9 @@ private:
 
 	/** Open the Asset Quality Console for inspection and debugging purposes. */
 	static void OpenAssetQualityConsole();
+
+	/** Execute a lightweight validation refresh action from the editor menu or toolbar entry points. */
+	void RunQuickValidation();
 
 	/** Command binding for the Asset Quality Console open action. */
 	TSharedPtr<const FUICommandInfo> OpenAssetQualityConsoleCommand;

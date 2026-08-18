@@ -4,7 +4,7 @@
 
 #include "AssetGateCommands.h"
 #include "AssetGateContentBrowserExtensions.h"
-#include "SAssetGateQualityConsole.h"
+#include "SAssetGateValidationConsole.h"
 
 #include "ToolMenus.h"
 #include "LevelEditor.h"
@@ -152,13 +152,32 @@ void FAssetGateEditorModule::RegisterMenus()
 		return;
 	}
 
-	FToolMenuSection& Section = Menu->FindOrAddSection(TEXT("AssetGate2"));
+	FToolMenuSection& Section = Menu->FindOrAddSection(TEXT("AssetGate"));
 	Section.AddMenuEntry(
 		TEXT("OpenAssetQualityConsole"),
 		LOCTEXT("OpenAssetQualityConsoleMenuItem", "Asset Quality Console"),
-		LOCTEXT("OpenAssetQualityConsoleMenuItemTooltip", "Open the AssetGate2 validation and quality console."),
+		LOCTEXT("OpenAssetQualityConsoleMenuItemTooltip", "Open the AssetGate validation and quality console."),
 		FSlateIcon(),
 		FUIAction(FExecuteAction::CreateStatic(&FAssetGateEditorModule::OpenAssetQualityConsole)));
+
+	UToolMenu* Toolbar = UToolMenus::Get()->ExtendMenu(TEXT("LevelEditor.LevelEditorToolBar.PlayToolBar"));
+	if (Toolbar)
+	{
+		FToolMenuSection& ToolbarSection = Toolbar->FindOrAddSection(TEXT("AssetGate"));
+		ToolbarSection.AddMenuEntry(
+			TEXT("OpenAssetQualityConsoleToolbar"),
+			LOCTEXT("OpenAssetQualityConsoleToolbarLabel", "Asset Quality"),
+			LOCTEXT("OpenAssetQualityConsoleToolbarTooltip", "Open the AssetGate Asset Quality Console."),
+			FSlateIcon(),
+			FUIAction(FExecuteAction::CreateStatic(&FAssetGateEditorModule::OpenAssetQualityConsole)));
+		ToolbarSection.AddMenuEntry(
+			TEXT("RunQuickAssetGateValidationToolbar"),
+			LOCTEXT("RunQuickAssetGateValidationLabel", "Validate"),
+			LOCTEXT("RunQuickAssetGateValidationTooltip",
+			        "Trigger the current AssetGate validation workflow placeholder."),
+			FSlateIcon(),
+			FUIAction(FExecuteAction::CreateRaw(this, &FAssetGateEditorModule::RunQuickValidation)));
+	}
 }
 
 void FAssetGateEditorModule::UnregisterMenus()
@@ -177,7 +196,7 @@ TSharedRef<SDockTab> FAssetGateEditorModule::SpawnAssetQualityConsoleTab(const F
 		.TabRole(NomadTab)
 		.Label(LOCTEXT("AssetQualityConsoleTabPanel", "Asset Quality Console"))
 		[
-			SNew(SAssetGateQualityConsole)
+			SNew(SAssetGateValidationConsole)
 		];
 
 	return NewTab;
@@ -187,6 +206,16 @@ void FAssetGateEditorModule::OpenAssetQualityConsole()
 {
 	FGlobalTabmanager::Get()->TryInvokeTab(AssetGateEditor::AssetQualityConsoleTabId);
 }
+
+void FAssetGateEditorModule::RunQuickValidation()
+{
+	FMessageLog AssetGateLog("AssetGate");
+	AssetGateLog.Info()->AddToken(FTextToken::Create(
+		LOCTEXT(
+			"RunQuickValidationPlaceholder",
+			"AssetGate quick validation entry point is wired and ready for the next validation execution slice.")));
+}
+
 
 #undef LOCTEXT_NAMESPACE
 

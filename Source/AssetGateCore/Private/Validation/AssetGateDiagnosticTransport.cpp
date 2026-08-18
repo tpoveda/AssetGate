@@ -139,23 +139,23 @@ void FAssetGateDiagnosticTransport::EmitToMessageLog(const FAssetGateDiagnostic&
 
 	UE_LOG(LogAssetGateDiagnosticTransport, Log, TEXT("%s"), *FormattedMessage);
 
-	FMessageLog AssetGate2Log("AssetGate2");
+	FMessageLog AssetGateLog("AssetGate");
 	switch (Diagnostic.Severity)
 	{
 	case EAssetGateDiagnosticSeverity::Info:
-		AssetGate2Log.Info()->AddToken(FTextToken::Create(Diagnostic.Message.IsEmpty()
+		AssetGateLog.Info()->AddToken(FTextToken::Create(Diagnostic.Message.IsEmpty()
 			? FText::FromString(MessageText)
 			: Diagnostic.Message));
 		break;
 	case EAssetGateDiagnosticSeverity::Warning:
-		AssetGate2Log.Warning()->AddToken(FTextToken::Create(Diagnostic.Message.IsEmpty()
+		AssetGateLog.Warning()->AddToken(FTextToken::Create(Diagnostic.Message.IsEmpty()
 			? FText::FromString(MessageText)
 			: Diagnostic.Message));
 		break;
 	case EAssetGateDiagnosticSeverity::Blocker:
 	case EAssetGateDiagnosticSeverity::Error:
 	default:
-		AssetGate2Log.Error()->AddToken(FTextToken::Create(Diagnostic.Message.IsEmpty()
+		AssetGateLog.Error()->AddToken(FTextToken::Create(Diagnostic.Message.IsEmpty()
 			? FText::FromString(MessageText)
 			: Diagnostic.Message));
 		break;

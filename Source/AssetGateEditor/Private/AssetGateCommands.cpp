@@ -8,7 +8,7 @@
 
 FAssetGateCommands::FAssetGateCommands() :
 	TCommands<FAssetGateCommands>(
-		TEXT("AssetGate2"),
+		TEXT("AssetGate"),
 		LOCTEXT("AssetGate", "AssetGate"), NAME_None,
 		FAppStyle::GetAppStyleSetName())
 {

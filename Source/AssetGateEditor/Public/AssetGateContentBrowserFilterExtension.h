@@ -19,7 +19,7 @@ public:
 		 * Add the AssetGate browser filters to the Content Browser filter list.
 		 *
 		 * @param DefaultCategory Default category provided by the Content Browser.
-		 * @param InOutFilterList The filter the list that receives AssetGate2 filters.
+		 * @param InOutFilterList The filter the list that receives AssetGate filters.
 		 */
 	virtual void AddFrontEndFilterExtensions(
 		TSharedPtr<FFrontendFilterCategory> DefaultCategory,

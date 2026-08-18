@@ -31,7 +31,7 @@ namespace
 		{
 			return NSLOCTEXT(
 				"AssetGate", "HasIssuesFilterTooltip",
-				"Shows only assets with recorded AssetGate2 diagnostics.");
+				"Shows only assets with recorded AssetGate diagnostics.");
 		}
 
 		virtual FLinearColor GetColor() const override

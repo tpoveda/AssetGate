@@ -14,13 +14,16 @@ class SListView;
  */
 struct FAssetGateConsoleRow
 {
+	/** Stable diagnostic identifier used to resolve structured explanation details. */
+	FString DiagnosticId;
+
 	/** Asset-friendly name displayed in the list view. */
 	FString AssetName;
 
 	/** Rule identifier that produced the diagnostic. */
 	FString RuleName;
 
-	/** Human-readable severity label displayed in editor UI. */
+	/** Human-readable severity label displayed in the editor UI. */
 	FString Severity;
 
 	/** Human-readable reason text shown in the result list. */
@@ -33,10 +36,10 @@ struct FAssetGateConsoleRow
 /**
  * Slate widget that displays the latest validation diagnostics for the active project.
  */
-class ASSETGATEEDITOR_API SAssetGateQualityConsole : public SCompoundWidget
+class ASSETGATEEDITOR_API SAssetGateValidationConsole : public SCompoundWidget
 {
 public:
-	SLATE_BEGIN_ARGS(SAssetGateQualityConsole)
+	SLATE_BEGIN_ARGS(SAssetGateValidationConsole)
 		{
 		}
 
@@ -58,4 +61,7 @@ private:
 
 	/** Reference to the list widget used to display diagnostics. */
 	TSharedPtr<SListView<TSharedPtr<FAssetGateConsoleRow>>> ListView;
+
+	/** The current selected diagnostic row used by the explanation panel. */
+	TSharedPtr<FAssetGateConsoleRow> SelectedRow;
 };

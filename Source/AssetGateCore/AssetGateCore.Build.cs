@@ -11,7 +11,8 @@ public class AssetGateCore : ModuleRules
 			{
 				"Core",
 				"CoreUObject",
-				"Engine"
+				"Engine",
+				"DataValidation"
 			}
 		);
 	}

@@ -67,8 +67,9 @@ protected:
 	 * @return A result of type EDataValidationResult, indicating the outcome of the validation. Possible values include
 	 *         Valid (validation passed), Invalid (validation failed), or NotValidated (validation not performed).
 	 */
-	virtual EDataValidationResult ValidateLoadedAsset_Implementation(const FAssetData& InAssetData, UObject* InAsset,
-	                                                                 FDataValidationContext& Context) override;
+	virtual EDataValidationResult ValidateLoadedAsset_Implementation(
+		const FAssetData& InAssetData, UObject* InAsset,
+		FDataValidationContext& Context) override;
 
 	/**
 	 * Append a diagnostic message to the validation errors in the provided data validation context.
@@ -80,6 +81,7 @@ protected:
 	 * @param InContext The validation context where the diagnostic should be registered. It manages the state of
 	 *                  validation and tracks errors, warnings, and informational messages for the asset being evaluated.
 	 */
-	void AppendDiagnosticToValidationErrors(const FAssetGateDiagnostic& Diagnostic,
-	                                        FDataValidationContext& InContext) const;
+	void AppendDiagnosticToValidationErrors(
+		const FAssetGateDiagnostic& Diagnostic,
+		FDataValidationContext& InContext) const;
 };

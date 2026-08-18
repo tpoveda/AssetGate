@@ -12,6 +12,8 @@ public class AssetGateCore : ModuleRules
 				"Core",
 				"CoreUObject",
 				"Engine",
+				"UnrealEd",
+				"AssetRegistry",
 				"DataValidation"
 			}
 		);

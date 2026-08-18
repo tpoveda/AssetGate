@@ -73,4 +73,4 @@ bool FAssetGateValidationRunContextTest::RunTest(const FString& Parameters)
 	return true;
 }
 
-#endif // WITH_EDITOR
+#endif

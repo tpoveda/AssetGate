@@ -6,7 +6,7 @@
 #include "Modules/ModuleManager.h"
 
 /** 
- * Module entry point for AssetGate2 editor integrations.
+ * Module entry point for AssetGate editor integrations.
  */
 class FAssetGateEditorModule : public IModuleInterface
 {

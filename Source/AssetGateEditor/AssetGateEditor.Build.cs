@@ -13,6 +13,7 @@ public class AssetGateEditor : ModuleRules
 			"Engine",
 			"Slate",
 			"SlateCore",
+			"InputCore",
 			"UnrealEd",
 			"LevelEditor",
 			"ContentBrowser",
